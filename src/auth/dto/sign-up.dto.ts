@@ -1,5 +1,4 @@
-import { IsEmail, IsEnum, IsString } from 'class-validator';
-import { UserRole } from 'src/users/user-role.enum';
+import { IsEmail, IsString } from 'class-validator';
 
 export class SignUpDto {
   @IsEmail()
@@ -13,7 +12,4 @@ export class SignUpDto {
 
   @IsString()
   readonly lastName: string;
-
-  @IsEnum(UserRole)
-  readonly role: UserRole;
 }

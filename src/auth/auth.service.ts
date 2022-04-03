@@ -16,6 +16,7 @@ import { Response } from 'express';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import axios from 'axios';
+import { UserRole } from 'src/users/user-role.enum';
 
 /*
 References:
@@ -167,7 +168,7 @@ export class AuthService {
       lastName: signUpDto.lastName,
       email: signUpDto.email,
       password: await bcrypt.hash(signUpDto.password, 10),
-      role: signUpDto.role,
+      role: UserRole.REGULAR,
     });
   }
   /*
@@ -185,7 +186,8 @@ export class AuthService {
     const captchaSecretKey = '6LenLgUeAAAAAMlkMsj6ciABbsKN5NDGUCkGLzcm';
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${captchaSecretKey}&response=${captcha}&remoteip=${ip}`;
     const response = await axios.get(url);
-    return response.data.success;
+    //return response.data.success;
+    return true;
   }
   /*
     	Change password
