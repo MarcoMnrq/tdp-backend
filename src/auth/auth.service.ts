@@ -17,6 +17,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import axios from 'axios';
 import { UserRole } from 'src/users/user-role.enum';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 /*
 References:
@@ -180,7 +181,7 @@ export class AuthService {
     return { authenticatedUser: user };
   }
   /*
-    	Change password
+    	Validate Google reCaptcha
   	*/
   async validateCaptcha(captcha: string, ip: string) {
     const captchaSecretKey = '6LenLgUeAAAAAMlkMsj6ciABbsKN5NDGUCkGLzcm';
@@ -188,6 +189,13 @@ export class AuthService {
     const response = await axios.get(url);
     //return response.data.success;
     return true;
+  }
+  async updateProfile(id: number, updateProfileDto: UpdateProfileDto) {
+    const user = await this.usersService.findOne(id);
+    user.lastName = updateProfileDto.lastName;
+    user.firstName = updateProfileDto.firstName;
+    const newUser = await this.usersService.updateUser(user);
+    return newUser;
   }
   /*
     	Change password

@@ -56,6 +56,10 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
+  updateUser(user: User) {
+    return this.userRepository.save(user);
+  }
+
   async updateRole(id: number, updateRoleDto: UpdateRoleDto) {
     const user = await this.findOne(id);
     if (updateRoleDto.role && updateRoleDto.password) {

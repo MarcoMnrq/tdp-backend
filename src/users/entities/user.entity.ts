@@ -5,12 +5,14 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserRole } from '../user-role.enum';
 import { formatRelative } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Profile } from 'src/profiles/entities/profile.entity';
 
 @Entity()
 export class User {
@@ -46,6 +48,9 @@ export class User {
 
   @Column({ default: false })
   verified: boolean;
+
+  @OneToMany(() => Profile, (profile) => profile.user)
+  profiles: Profile[];
 
   @CreateDateColumn()
   createdAt: Date;

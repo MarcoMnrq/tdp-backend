@@ -7,17 +7,19 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Get,
+  Patch,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignInEmailDto } from './dto/sign-in-email.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { Response } from 'express';
+// import { Response } from 'express';
 import { ExposedEndpoint } from 'src/decorators/exposed-endpoint.decorator';
-import { SignIn2faDto } from './dto/sign-in-2fa.dto';
+// import { SignIn2faDto } from './dto/sign-in-2fa.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RealIp } from 'src/decorators/realip.decorator';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @ApiTags('Authentication & Authorization Controller')
 @Controller({
@@ -34,15 +36,6 @@ export class AuthController {
     return this.authService.loginWithEmail(signInDto, ipAddress);
   }
 
-  @Post('login-totp')
-  @ExposedEndpoint()
-  async loginTotp(
-    @Body() signInDto: SignIn2faDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return this.authService.loginWithTotp(signInDto, response);
-  }
-
   @Post('register')
   @ExposedEndpoint()
   async register(@Body() signUpDto: SignUpDto) {
@@ -50,11 +43,19 @@ export class AuthController {
   }
 
   @Get('user')
+  @ApiBearerAuth()
   async me(@Req() req) {
     return this.authService.getUserDetails(req.user.id);
   }
 
+  @Patch('user')
+  @ApiBearerAuth()
+  async updateProfile(@Req() req, @Body() updateProfileDto: UpdateProfileDto) {
+    return this.authService.updateProfile(req.user.id, updateProfileDto);
+  }
+
   @Post('change-password')
+  @ApiBearerAuth()
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @Req() req,
@@ -69,6 +70,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiBearerAuth()
   async logout(@Res() res) {
     return this.authService.logout(res);
   }
