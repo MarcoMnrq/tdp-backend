@@ -1,5 +1,12 @@
+import { Record } from 'src/records/entities/record.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Profile {
@@ -14,4 +21,7 @@ export class Profile {
 
   @ManyToOne(() => User, (user) => user.profiles)
   user: User;
+
+  @OneToMany(() => Record, (record) => record.profile)
+  records: Record[];
 }

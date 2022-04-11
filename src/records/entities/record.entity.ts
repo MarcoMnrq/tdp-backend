@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Profile } from 'src/profiles/entities/profile.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Record {
@@ -10,4 +11,10 @@ export class Record {
 
   @Column()
   success: boolean;
+
+  @Column()
+  minigame: string;
+
+  @ManyToOne(() => Profile, (profile) => profile.records)
+  profile: Profile;
 }

@@ -17,31 +17,31 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @ApiTags('Records Controller')
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller({ path: 'records', version: '1' })
+@Controller({ version: '1' })
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Post()
+  @Post('profiles/:id/records')
   create(@Body() createRecordDto: CreateRecordDto) {
     return this.recordsService.create(createRecordDto);
   }
 
-  @Get()
+  @Get('profiles/:id/records')
   findAll() {
     return this.recordsService.findAll();
   }
 
-  @Get(':id')
+  @Get('records/:id')
   findOne(@Param('id') id: string) {
     return this.recordsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch('records/:id')
   update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
     return this.recordsService.update(+id, updateRecordDto);
   }
 
-  @Delete(':id')
+  @Delete('records/:id')
   remove(@Param('id') id: string) {
     return this.recordsService.remove(+id);
   }
