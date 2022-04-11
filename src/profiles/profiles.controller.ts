@@ -6,25 +6,30 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Profiles Controller')
-@Controller('profiles')
+@ApiBearerAuth()
+@UseInterceptors(ClassSerializerInterceptor)
+@Controller({ path: 'profiles', version: '1' })
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 
   @Post()
-  create(@Body() createProfileDto: CreateProfileDto) {
-    return this.profilesService.create(createProfileDto);
+  create(@Req() req, @Body() createProfileDto: CreateProfileDto) {
+    return this.profilesService.create(req.user, createProfileDto);
   }
 
   @Get()
-  findAll() {
-    return this.profilesService.findAll();
+  findAll(@Req() req) {
+    return this.profilesService.findAll(req.user);
   }
 
   @Get(':id')
@@ -33,12 +38,16 @@ export class ProfilesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profilesService.update(+id, updateProfileDto);
+  update(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    return this.profilesService.update(+id, req.user, updateProfileDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profilesService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    return this.profilesService.remove(+id, req.user.id);
   }
 }

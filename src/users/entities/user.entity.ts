@@ -49,7 +49,7 @@ export class User {
   @Column({ default: false })
   verified: boolean;
 
-  @OneToMany(() => Profile, (profile) => profile.user)
+  @OneToMany(() => Profile, (profile) => profile.user, { eager: true })
   profiles: Profile[];
 
   @CreateDateColumn()
