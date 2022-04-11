@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Profile } from './entities/profile.entity';
+import { Achievements } from './enums/achievements.enum';
+import { ProfileEvents } from './enums/profile-events.enum';
 
 @Injectable()
 export class ProfilesService {
@@ -37,6 +39,21 @@ export class ProfilesService {
     }
     return profile;
   }
+  async findOneAndVerify(id: number, userId: number) {
+    const profile = await this.profilesRepository.findOne(id, {
+      relations: ['user'],
+    });
+    const user = await this.usersService.findOne(userId);
+    if (!profile) {
+      throw new BadRequestException(`Profile with id ${id} not found`);
+    }
+    if (profile.user.id !== user.id) {
+      throw new BadRequestException(
+        'You are not allowed to access this profile',
+      );
+    }
+    return profile;
+  }
 
   async update(id: number, userId: number, updateProfileDto: UpdateProfileDto) {
     const user = await this.usersService.findOne(userId);
@@ -61,5 +78,26 @@ export class ProfilesService {
       );
     }
     return this.profilesRepository.remove(profile);
+  }
+
+  async checkAchievements(profileId: number, event: ProfileEvents) {
+    const profile = await this.findOne(profileId);
+    const achievements = profile.achievements;
+    if (event === ProfileEvents.VICTORY) {
+      if (achievements.includes(Achievements.FIRST_WIN)) {
+        return;
+      }
+      achievements.push(Achievements.FIRST_WIN);
+    }
+    if (event === ProfileEvents.DEFEAT) {
+      if (achievements.includes(Achievements.FIRST_LOSS)) {
+        return;
+      }
+      achievements.push(Achievements.FIRST_LOSS);
+    }
+    return this.profilesRepository.save({
+      ...profile,
+      achievements,
+    });
   }
 }

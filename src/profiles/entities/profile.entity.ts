@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Achievements } from '../enums/achievements.enum';
 
 @Entity()
 export class Profile {
@@ -18,6 +19,9 @@ export class Profile {
 
   @Column()
   dob: Date;
+
+  @Column({ type: 'enum', enum: Achievements, array: true, default: [] })
+  achievements: Achievements[];
 
   @ManyToOne(() => User, (user) => user.profiles)
   user: User;

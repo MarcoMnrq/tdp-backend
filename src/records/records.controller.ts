@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Req,
 } from '@nestjs/common';
 import { RecordsService } from './records.service';
 import { CreateRecordDto } from './dto/create-record.dto';
@@ -22,23 +23,27 @@ export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
   @Post('profiles/:id/records')
-  create(@Body() createRecordDto: CreateRecordDto) {
-    return this.recordsService.create(createRecordDto);
+  create(
+    @Param('id') profileId: string,
+    @Req() req,
+    @Body() createRecordDto: CreateRecordDto,
+  ) {
+    return this.recordsService.create(+profileId, req.user.id, createRecordDto);
   }
 
   @Get('profiles/:id/records')
-  findAll() {
-    return this.recordsService.findAll();
+  findAll(@Param('id') profileId: string, @Req() req) {
+    return this.recordsService.findAll(+profileId, req.user.id);
+  }
+
+  @Get('profiles/:id/record-reports')
+  getReport(@Param('id') profileId: string, @Req() req) {
+    return this.recordsService.getReport(+profileId, req.user.id);
   }
 
   @Get('records/:id')
   findOne(@Param('id') id: string) {
     return this.recordsService.findOne(+id);
-  }
-
-  @Patch('records/:id')
-  update(@Param('id') id: string, @Body() updateRecordDto: UpdateRecordDto) {
-    return this.recordsService.update(+id, updateRecordDto);
   }
 
   @Delete('records/:id')
