@@ -16,7 +16,7 @@ import { RecordsModule } from './records/records.module';
     TypeOrmModule.forRoot(
       process.env.NODE_ENV === 'production'
         ? {
-            type: 'mysql',
+            type: 'postgres',
             url: process.env.DATABASE_URL,
             autoLoadEntities: true,
             synchronize: true,
